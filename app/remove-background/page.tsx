@@ -1,11 +1,16 @@
 'use client';
+import Image from 'next/image';
 import React, { useState } from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';
 import { FaTrashAlt } from 'react-icons/fa';
+import { ThreeDots } from 'react-loader-spinner';
 
 const RemoveBackgroundPage = () => {
   const [file, setFile] = useState<File | null>();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [outputImage, setOutputImage] = useState<string | null>(null);
+  const [base64Image, setBase64Image] = useState<string | null>(null);
 
   const acceptedFilesTypes = {
     'image/jpeg': ['.jpeg', '.png'],
@@ -21,10 +26,17 @@ const RemoveBackgroundPage = () => {
       setError('Please upload a PNG or JPEG image less than 5MB.');
       return;
     }
-
+    handleDelete();
     console.log(acceptedFiles);
     setError('');
     setFile(acceptedFiles[0]);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(acceptedFiles[0]);
+    reader.onload = () => {
+      const binaryStr = reader.result as string;
+      setBase64Image(binaryStr);
+    };
   };
 
   const fileSize = (size: number) => {
@@ -37,8 +49,35 @@ const RemoveBackgroundPage = () => {
 
   const handleDelete = () => {
     setFile(null);
+    setOutputImage(null);
   };
 
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    const response = await fetch(
+      'http://localhost:4000/ai-images/remove-background',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ image: base64Image }),
+      }
+    );
+
+    let result = await response.json();
+    console.log(result);
+
+    if (result.error) {
+      setError(result.error);
+      setLoading(false);
+      return;
+    }
+
+    setOutputImage(result.output);
+    setLoading(false);
+  };
   return (
     <div className='max-w-3xl mx-auto my-10 px-4'>
       {/* Header Section */}
@@ -75,7 +114,13 @@ const RemoveBackgroundPage = () => {
       {/* Submit button */}
       {file && (
         <div className='flex items-center justify-center mt-6'>
-          <button className='text-white text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l rounded-lg px-4 py-2 text-center mb-2'>
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className={`text-white text-lg bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l rounded-lg px-4 py-2 text-center mb-2 ${
+              loading && 'cursor-progress'
+            }`}
+          >
             Remove background
           </button>
         </div>
@@ -102,7 +147,27 @@ const RemoveBackgroundPage = () => {
               </div>
             </div>
             <div className='flex items-center justify-center'>
-              Output image here
+              {loading && (
+                <ThreeDots
+                  height='60'
+                  width='60'
+                  color='#eeeeee'
+                  ariaLabel='three-dots-loading'
+                  visible={true}
+                />
+              )}
+
+              {outputImage && (
+                <Image
+                  src={
+                    'https://media.istockphoto.com/id/2103894533/photo/business-people-in-the-office.webp?b=1&s=170667a&w=0&k=20&c=hgHCo-IqXT7085Pb6g3kUQ74vCT1KQZHwr3njSYsWMc='
+                  }
+                  width={100}
+                  height={100}
+                  alt='output'
+                  className='object-cover w-full h-full'
+                />
+              )}
             </div>
           </>
         )}
