@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState } from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';
 
@@ -25,6 +24,14 @@ const RemoveBackgroundPage = () => {
     console.log(acceptedFiles);
     setError('');
     setFile(acceptedFiles[0]);
+  };
+
+  const fileSize = (size: number) => {
+    if (size === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(size) / Math.log(k));
+    return parseFloat((size / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
@@ -68,6 +75,27 @@ const RemoveBackgroundPage = () => {
           </button>
         </div>
       )}
+      {/* Images Section */}
+      <section className='grid grid-cols-2 gap-4 mt-4'>
+        {file && (
+          <>
+            <div className='relative'>
+              <img
+                src={URL.createObjectURL(file)}
+                alt={file.name}
+                className='object-cover w-full h-full'
+              />
+
+              <div className='absolute bottom-0 left-0 right-0 bg-gray-900 bg-opacity-50 text-white text-md p-2'>
+                {file.name} ({fileSize(file.size)})
+              </div>
+            </div>
+            <div className='flex items-center justify-center'>
+              Output image here
+            </div>
+          </>
+        )}
+      </section>
     </div>
   );
 };
