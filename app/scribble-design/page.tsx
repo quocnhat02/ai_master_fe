@@ -1,10 +1,21 @@
 'use client';
 
-import { useState } from 'react';
-import { ReactSketchCanvas } from 'react-sketch-canvas';
+import { useRef, useState } from 'react';
+import { ReactSketchCanvas, ReactSketchCanvasRef } from 'react-sketch-canvas';
+import { FaUndo, FaTrash } from 'react-icons/fa';
 
 const RestoreImagePage: React.FC = () => {
   const [prompt, setPrompt] = useState('');
+
+  const canvasRef = useRef<ReactSketchCanvasRef>(null);
+
+  const handleUndo = () => {
+    canvasRef.current!.undo();
+  };
+
+  const handleClear = () => {
+    canvasRef.current!.clearCanvas();
+  };
 
   return (
     <div className='max-w-3xl mx-auto my-10 px-4'>
@@ -18,11 +29,27 @@ const RestoreImagePage: React.FC = () => {
       <section className='w-[400px] h-[400px] mx-auto mb-16 mt-6'>
         <div className='w-full aspect-square border-none'>
           <ReactSketchCanvas
+            ref={canvasRef}
             width='100%'
             height='100%'
             strokeWidth={4}
             strokeColor='#000000'
           />
+        </div>
+        <div className='flex items-center justify-between mt-2'>
+          <button
+            onClick={handleUndo}
+            className=' text-gray-300 text-md flex items-center hover:scale-110 duration-300 hover:text-yellow-500'
+          >
+            <FaUndo className='mr-2' /> Undo
+          </button>
+
+          <button
+            onClick={handleClear}
+            className=' text-gray-300 text-md flex items-center hover:scale-110 duration-300 hover:text-red-500'
+          >
+            <FaTrash className='mr-2' /> Clear
+          </button>
         </div>
       </section>
       {/* Prompt Section */}
