@@ -73,7 +73,7 @@ const InteriorDesignPage: React.FC = () => {
 
   return (
     <div className='max-w-3xl mx-auto my-10 px-4'>
-      <div className='text-center  mb-4'>
+      <div className='text-center mb-4'>
         <h1 className='font-semibold text-transparent text-5xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 bg-clip-text leading-tight'>
           Interior Design
         </h1>
