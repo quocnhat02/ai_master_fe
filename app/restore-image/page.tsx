@@ -7,7 +7,7 @@ import { ThreeDots } from 'react-loader-spinner';
 
 import { saveAs } from 'file-saver';
 
-const RemoveBackgroundPage = () => {
+const RestoreImagePage = () => {
   const [file, setFile] = useState<File | null>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -58,7 +58,7 @@ const RemoveBackgroundPage = () => {
     setLoading(true);
 
     const response = await fetch(
-      'http://localhost:4000/ai-images/remove-background',
+      'http://localhost:4000/ai-images/restore-image',
       {
         method: 'POST',
         headers: {
@@ -92,7 +92,7 @@ const RemoveBackgroundPage = () => {
       {/* Header Section */}
       <div className='text-center'>
         <h1 className='font-semibold text-transparent text-5xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 bg-clip-text leading-tight'>
-          Remove background
+          Restore Image
         </h1>
       </div>
       {/* Dropzone Section */}
@@ -130,7 +130,7 @@ const RemoveBackgroundPage = () => {
               loading && 'cursor-progress'
             }`}
           >
-            Remove background
+            Restore Image
           </button>
         </div>
       )}
@@ -191,4 +191,4 @@ const RemoveBackgroundPage = () => {
   );
 };
 
-export default RemoveBackgroundPage;
+export default RestoreImagePage;
